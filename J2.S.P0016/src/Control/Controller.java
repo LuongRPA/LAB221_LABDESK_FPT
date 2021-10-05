@@ -64,6 +64,7 @@ Counter cr = new Counter();
      
      
     }
+    
     public void initCounter(){
         g.setColor(Color.black); // border of oval
         g.setStroke(new BasicStroke(5)); // line
