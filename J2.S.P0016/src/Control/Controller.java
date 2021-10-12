@@ -87,6 +87,7 @@ Counter cr = new Counter();
         }else{
             g.setColor(Color.red); // choose red color
             int arcAngle = -(number%TIME_LIMIT)*(360/TIME_LIMIT);// tinh  góc
+           // g.drawLine(x,y, RADIUS, RADIUS);
             g.fillArc(x, y, RADIUS, RADIUS, 90, arcAngle);
         }
     }
