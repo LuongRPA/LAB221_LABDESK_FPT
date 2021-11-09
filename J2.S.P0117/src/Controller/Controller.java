@@ -7,8 +7,12 @@ package Controller;
 
 import View.View;
 import java.sql.Connection;
+import java.sql.Date;
+//import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -70,12 +74,12 @@ public class Controller {
         });
     }
     //// use batch in java add list data to sql
-    private void batchUpdate() throws SQLException{
+    private void batchUpdate() throws SQLException, ParseException{
         Connection conn = new dal.Dataconnection().getConnection();
         
         try { // masage to sql
             String sql = " \n"
-                    + "INSERT INTO [FU_DB].[dbo].[Stocks]( [StockID]\n"
+                    + "INSERT INTO [FU_DB].[dbo].[Stock117]( [StockID]\n"
                     + "      ,[StockName]\n"
                     + "      ,[Address]\n"
                     + "      ,[DateAvailable]\n"
@@ -86,12 +90,23 @@ public class Controller {
             conn.setAutoCommit(false);
             PreparedStatement ps = conn.prepareStatement(sql);
             JTable table = view.getTable(); 
+            //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); // định dạng 
+            sdf.setLenient(false); // k cho cộng date
             
             for (int i = 0; i < table.getRowCount(); i++) { // get seqence row value of table
                 ps.setString(1, table.getValueAt(i, 0).toString());
                 ps.setString(2, table.getValueAt(i, 1).toString());
                 ps.setString(3, table.getValueAt(i, 2).toString());
-                ps.setString(4, table.getValueAt(i, 3).toString());
+                
+                java.util.Date date = sdf.parse(table.getValueAt(i, 3).toString()); // chuyển sang date
+                ps.setDate(4, new java.sql.Date(date.getTime()));
+                
+                
+               // ps.setString(4, table.getValueAt(i, 3).toString());
+                //ps.setDate("2017-02-21");
+               // ps.setDate(4, Date.valueOf(table.getValueAt(i, 3).toString()));
+              //ps.setDate(4, java.sql.Date.valueOf(table.getValueAt(i, 3).toString()));
                 ps.setString(5, table.getValueAt(i, 4).toString());
                 ps.addBatch(); // add to batch
                 ps.executeBatch(); // executeBatch
@@ -104,9 +119,14 @@ public class Controller {
             
         } catch (SQLException ex) {
             conn.rollback();        // rollback data if  catch exception 
-            JOptionPane.showMessageDialog(view, ex.getMessage());        
-        } finally {
-            conn.close(); // close
+            JOptionPane.showMessageDialog(view, ex.getMessage()); 
+            
+        }catch (Exception x) {
+            conn.rollback();        // rollback data if  catch exception 
+            JOptionPane.showMessageDialog(view, x.getMessage());
+        }
+        finally {
+           // conn.close(); // close
         }
         
     }
